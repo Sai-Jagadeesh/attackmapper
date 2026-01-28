@@ -1,7 +1,7 @@
 <h1 align="center">AttackMapper</h1>
 
 <p align="center">
-  <strong>Enterprise Attack Path Visualization & Threat Intelligence Platform</strong>
+  <strong>Attack Path Visualization & Threat Intelligence Platform</strong>
 </p>
 
 <p align="center">
@@ -21,7 +21,7 @@
 
 ## Overview
 
-AttackMapper is a powerful CLI tool for red team operations that generates comprehensive attack paths, maps techniques to the MITRE ATT&CK framework, and integrates real-time threat intelligence. Generate beautiful, interactive HTML reports with attack flow visualizations.
+AttackMapper is a powerful CLI tool for red team operations that generates attack paths, maps techniques to the MITRE ATT&CK framework, and integrates real-time threat intelligence. Generate beautiful, interactive HTML reports with attack flow visualizations.
 
 ## Features
 
