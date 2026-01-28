@@ -1,0 +1,179 @@
+{
+  "version": "1.0.0",
+  "description": "Mapping of attack techniques to offensive security tools",
+  "tools": {
+    "mimikatz": {
+      "name": "Mimikatz",
+      "description": "Windows credential extraction and manipulation tool",
+      "url": "https://github.com/gentilkiwi/mimikatz",
+      "techniques": [
+        "T1003.001",
+        "T1003.006",
+        "T1558.001",
+        "T1558.002",
+        "T1558.003",
+        "T1550.002",
+        "T1550.003",
+        "T1134.001",
+        "T1556.001"
+      ],
+      "platforms": ["windows"]
+    },
+    "impacket": {
+      "name": "Impacket",
+      "description": "Python classes for working with network protocols",
+      "url": "https://github.com/fortra/impacket",
+      "techniques": [
+        "T1003.006",
+        "T1558.003",
+        "T1558.004",
+        "T1550.002",
+        "T1021.002",
+        "T1021.003",
+        "T1557.001"
+      ],
+      "platforms": ["linux", "windows", "macos"],
+      "commands": {
+        "secretsdump.py": "DCSync and credential dumping",
+        "GetUserSPNs.py": "Kerberoasting",
+        "GetNPUsers.py": "AS-REP Roasting",
+        "psexec.py": "Remote execution via SMB",
+        "wmiexec.py": "Remote execution via WMI",
+        "smbexec.py": "Remote execution via SMB",
+        "dcomexec.py": "Remote execution via DCOM",
+        "ntlmrelayx.py": "NTLM relay attacks"
+      }
+    },
+    "rubeus": {
+      "name": "Rubeus",
+      "description": "C# Kerberos abuse toolkit",
+      "url": "https://github.com/GhostPack/Rubeus",
+      "techniques": [
+        "T1558.001",
+        "T1558.002",
+        "T1558.003",
+        "T1558.004",
+        "T1550.003"
+      ],
+      "platforms": ["windows"],
+      "commands": {
+        "kerberoast": "Kerberoasting",
+        "asreproast": "AS-REP Roasting",
+        "ptt": "Pass-the-Ticket",
+        "harvest": "Ticket harvesting",
+        "s4u": "S4U delegation abuse"
+      }
+    },
+    "bloodhound": {
+      "name": "BloodHound",
+      "description": "Active Directory attack path visualization",
+      "url": "https://github.com/BloodHoundAD/BloodHound",
+      "techniques": [
+        "T1087.002",
+        "T1069.002",
+        "T1482",
+        "T1018"
+      ],
+      "platforms": ["linux", "windows", "macos"],
+      "collectors": {
+        "SharpHound": "Windows C# collector",
+        "BloodHound.py": "Python collector for Linux",
+        "AzureHound": "Azure AD collector"
+      }
+    },
+    "crackmapexec": {
+      "name": "CrackMapExec",
+      "description": "Swiss army knife for pentesting networks",
+      "url": "https://github.com/byt3bl33d3r/CrackMapExec",
+      "techniques": [
+        "T1110.003",
+        "T1550.002",
+        "T1021.002",
+        "T1021.006",
+        "T1552.006"
+      ],
+      "platforms": ["linux", "windows", "macos"]
+    },
+    "responder": {
+      "name": "Responder",
+      "description": "LLMNR/NBT-NS/mDNS poisoner",
+      "url": "https://github.com/lgandx/Responder",
+      "techniques": [
+        "T1557.001"
+      ],
+      "platforms": ["linux"]
+    },
+    "powerview": {
+      "name": "PowerView",
+      "description": "PowerShell AD enumeration tool",
+      "url": "https://github.com/PowerShellMafia/PowerSploit",
+      "techniques": [
+        "T1087.002",
+        "T1069.002",
+        "T1482",
+        "T1558.003",
+        "T1484.001"
+      ],
+      "platforms": ["windows"]
+    },
+    "certify": {
+      "name": "Certify",
+      "description": "AD CS enumeration and abuse tool",
+      "url": "https://github.com/GhostPack/Certify",
+      "techniques": [
+        "T1649"
+      ],
+      "platforms": ["windows"]
+    },
+    "certipy": {
+      "name": "Certipy",
+      "description": "Python tool for AD CS enumeration and abuse",
+      "url": "https://github.com/ly4k/Certipy",
+      "techniques": [
+        "T1649",
+        "T1078.002"
+      ],
+      "platforms": ["linux", "windows", "macos"]
+    },
+    "whisker": {
+      "name": "Whisker",
+      "description": "Shadow Credentials attack tool",
+      "url": "https://github.com/eladshamir/Whisker",
+      "techniques": [
+        "T1078.002"
+      ],
+      "platforms": ["windows"]
+    },
+    "cobaltstrike": {
+      "name": "Cobalt Strike",
+      "description": "Commercial adversary simulation platform",
+      "url": "https://www.cobaltstrike.com/",
+      "techniques": [
+        "T1566.001",
+        "T1059.001",
+        "T1055",
+        "T1071.001"
+      ],
+      "platforms": ["windows", "linux", "macos"]
+    },
+    "evil-winrm": {
+      "name": "Evil-WinRM",
+      "description": "WinRM shell for pentesting",
+      "url": "https://github.com/Hackplayers/evil-winrm",
+      "techniques": [
+        "T1021.006"
+      ],
+      "platforms": ["linux"]
+    },
+    "kerbrute": {
+      "name": "Kerbrute",
+      "description": "Kerberos bruteforce and enumeration",
+      "url": "https://github.com/ropnop/kerbrute",
+      "techniques": [
+        "T1110.003",
+        "T1558.004"
+      ],
+      "platforms": ["linux", "windows", "macos"]
+    }
+  }
+}

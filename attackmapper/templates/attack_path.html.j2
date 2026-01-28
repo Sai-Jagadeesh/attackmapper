@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-tertiary: #0f3460;
+            --accent: #00d4ff;
+            --accent-secondary: #ff6b6b;
+            --text-primary: #eee;
+            --text-secondary: #aaa;
+            --text-dim: #666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 2px solid var(--accent);
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .meta {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .meta span {
+            margin: 0 10px;
+        }
+
+        h2 {
+            color: var(--accent-secondary);
+            font-size: 1.5rem;
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        /* Attack Chain Visualization */
+        .chain-visualization {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            overflow-x: auto;
+        }
+
+        .chain-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-width: fit-content;
+        }
+
+        .chain-phase {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .chain-arrow {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .phase-reconnaissance { background: #0891b2; }
+        .phase-initial_access { background: #059669; }
+        .phase-execution { background: #d97706; }
+        .phase-persistence { background: #7c3aed; }
+        .phase-privilege_escalation { background: #dc2626; }
+        .phase-defense_evasion { background: #2563eb; }
+        .phase-credential_access { background: #be123c; }
+        .phase-discovery { background: #0e7490; }
+        .phase-lateral_movement { background: #ca8a04; }
+        .phase-collection { background: #9333ea; }
+        .phase-exfiltration { background: #1d4ed8; }
+        .phase-impact { background: #991b1b; }
+
+        /* Steps */
+        .steps-container {
+            position: relative;
+        }
+
+        .step {
+            display: flex;
+            margin-bottom: 0;
+            background: var(--bg-secondary);
+            border-radius: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .step:first-child {
+            border-radius: 12px 12px 0 0;
+        }
+
+        .step:last-child {
+            border-radius: 0 0 12px 12px;
+        }
+
+        .step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 40px;
+            right: 20px;
+            height: 1px;
+            background: var(--bg-tertiary);
+        }
+
+        .step-number {
+            background: var(--accent);
+            color: var(--bg-primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            min-width: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .step-content {
+            flex: 1;
+            padding: 25px 30px;
+        }
+
+        .step-phase-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .step-technique-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 5px;
+        }
+
+        .step-mitre-id {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+        }
+
+        .step-description {
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+        }
+
+        .step-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .tools-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .tool-tag {
+            background: var(--bg-primary);
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Path Connector */
+        .path-connector {
+            width: 80px;
+            display: flex;
+            justify-content: center;
+            background: var(--bg-secondary);
+        }
+
+        .connector-line {
+            width: 3px;
+            height: 30px;
+            background: linear-gradient(to bottom, var(--accent), var(--accent-secondary));
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+            border-top: 1px solid var(--bg-tertiary);
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .step {
+                flex-direction: column;
+            }
+
+            .step-number {
+                min-width: auto;
+                width: 100%;
+                padding: 15px;
+            }
+
+            .chain-flow {
+                flex-direction: column;
+            }
+
+            .chain-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>{{ title }}</h1>
+            <div class="meta">
+                <span>Generated: {{ generated_at }}</span>
+                <span>|</span>
+                <span>Infrastructure: {{ infrastructure | upper }}</span>
+                <span>|</span>
+                <span>Steps: {{ total_steps }}</span>
+            </div>
+        </header>
+
+        <h2>Attack Chain Overview</h2>
+        <div class="chain-visualization">
+            <div class="chain-flow">
+                {% for phase in phases_in_path %}
+                {% if not loop.first %}
+                <span class="chain-arrow">&rarr;</span>
+                {% endif %}
+                <span class="chain-phase phase-{{ phase }}">{{ phase_display_names[phase] }}</span>
+                {% endfor %}
+            </div>
+        </div>
+
+        <h2>Detailed Attack Steps</h2>
+        <div class="steps-container">
+            {% for step in steps %}
+            <div class="step">
+                <div class="step-number">{{ step.step_number }}</div>
+                <div class="step-content">
+                    <span class="step-phase-badge phase-{{ step.phase }}">{{ step.phase_display }}</span>
+                    <div class="step-technique-name">{{ step.technique_name }}</div>
+                    <div class="step-mitre-id">{{ step.mitre_id }}</div>
+                    <p class="step-description">{{ step.description }}</p>
+                    <div class="step-details">
+                        {% if step.tools %}
+                        <div class="detail">
+                            <span class="detail-label">Tools</span>
+                            <div class="tools-list">
+                                {% for tool in step.tools %}
+                                <span class="tool-tag">{{ tool }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if step.detection %}
+                        <div class="detail">
+                            <span class="detail-label">Detection</span>
+                            <span class="detail-value">{{ step.detection }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <footer>
+            <p>Generated by <a href="https://github.com/attackmapper/attackmapper">AttackMapper</a></p>
+            <p>For authorized security testing and educational purposes only.</p>
+        </footer>
+    </div>
+</body>
+</html>

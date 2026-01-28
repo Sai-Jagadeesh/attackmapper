@@ -1,0 +1,201 @@
+{
+  "version": "1.0.0",
+  "description": "Known threat actors and their TTPs",
+  "threat_actors": [
+    {
+      "name": "APT29",
+      "aliases": ["Cozy Bear", "The Dukes", "NOBELIUM", "Midnight Blizzard", "UNC2452"],
+      "description": "Russian state-sponsored threat group known for sophisticated espionage operations targeting government, diplomatic, and policy organizations",
+      "origin": "Russia",
+      "motivation": "Espionage",
+      "targeted_infrastructure": ["ad", "azure"],
+      "targeted_sectors": ["Government", "Defense", "Technology", "Think Tanks"],
+      "ttps": [
+        "T1566.001",
+        "T1558.003",
+        "T1003.006",
+        "T1550.002",
+        "T1484.001",
+        "T1078.004"
+      ],
+      "recent_campaigns": [
+        "SolarWinds supply chain compromise (2020)",
+        "Microsoft 365 OAuth app abuse (2023)",
+        "TeamCity vulnerability exploitation (2024)"
+      ],
+      "references": [
+        "https://attack.mitre.org/groups/G0016/",
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-116a"
+      ]
+    },
+    {
+      "name": "APT28",
+      "aliases": ["Fancy Bear", "Sofacy", "Pawn Storm", "Sednit", "Forest Blizzard"],
+      "description": "Russian military intelligence (GRU) threat group targeting government, military, and security organizations",
+      "origin": "Russia",
+      "motivation": "Espionage",
+      "targeted_infrastructure": ["ad", "network"],
+      "targeted_sectors": ["Government", "Military", "Media", "Defense"],
+      "ttps": [
+        "T1566.001",
+        "T1110.003",
+        "T1003.001",
+        "T1550.002",
+        "T1021.001"
+      ],
+      "recent_campaigns": [
+        "Government phishing campaigns",
+        "NATO member targeting",
+        "Credential harvesting operations"
+      ],
+      "references": [
+        "https://attack.mitre.org/groups/G0007/"
+      ]
+    },
+    {
+      "name": "FIN7",
+      "aliases": ["Carbanak", "Carbon Spider", "ELBRUS"],
+      "description": "Financially motivated threat group known for targeting retail, hospitality, and financial services with sophisticated malware",
+      "origin": "Eastern Europe",
+      "motivation": "Financial",
+      "targeted_infrastructure": ["ad"],
+      "targeted_sectors": ["Retail", "Hospitality", "Financial Services"],
+      "ttps": [
+        "T1566.001",
+        "T1059.001",
+        "T1003.001",
+        "T1021.001",
+        "T1550.002",
+        "T1486"
+      ],
+      "recent_campaigns": [
+        "Point-of-sale malware campaigns",
+        "Ransomware affiliate operations",
+        "Supply chain attacks"
+      ],
+      "references": [
+        "https://attack.mitre.org/groups/G0046/"
+      ]
+    },
+    {
+      "name": "Lazarus Group",
+      "aliases": ["Hidden Cobra", "Zinc", "Diamond Sleet", "APT38"],
+      "description": "North Korean state-sponsored threat group conducting espionage and financial theft operations",
+      "origin": "North Korea",
+      "motivation": "Financial, Espionage",
+      "targeted_infrastructure": ["ad", "network"],
+      "targeted_sectors": ["Financial Services", "Cryptocurrency", "Defense", "Technology"],
+      "ttps": [
+        "T1566.001",
+        "T1059.001",
+        "T1003.001",
+        "T1486",
+        "T1071.001"
+      ],
+      "recent_campaigns": [
+        "Cryptocurrency exchange attacks",
+        "Defense contractor targeting",
+        "Software supply chain compromises"
+      ],
+      "references": [
+        "https://attack.mitre.org/groups/G0032/"
+      ]
+    },
+    {
+      "name": "BlackCat",
+      "aliases": ["ALPHV", "Noberus"],
+      "description": "Ransomware-as-a-service operation known for sophisticated double-extortion attacks",
+      "origin": "Unknown",
+      "motivation": "Financial",
+      "targeted_infrastructure": ["ad"],
+      "targeted_sectors": ["Healthcare", "Financial Services", "Manufacturing", "Technology"],
+      "ttps": [
+        "T1486",
+        "T1003.006",
+        "T1484.002",
+        "T1021.002",
+        "T1490"
+      ],
+      "recent_campaigns": [
+        "Healthcare sector attacks",
+        "Critical infrastructure targeting",
+        "Law firm data breaches"
+      ],
+      "references": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-136a"
+      ]
+    },
+    {
+      "name": "Scattered Spider",
+      "aliases": ["UNC3944", "Muddled Libra", "Roasted 0ktapus"],
+      "description": "Threat group specializing in social engineering and identity provider compromise for data theft and extortion",
+      "origin": "Unknown",
+      "motivation": "Financial",
+      "targeted_infrastructure": ["ad", "azure"],
+      "targeted_sectors": ["Technology", "Telecommunications", "Financial Services", "Gaming"],
+      "ttps": [
+        "T1566",
+        "T1078",
+        "T1556",
+        "T1098",
+        "T1621"
+      ],
+      "recent_campaigns": [
+        "SIM swapping attacks",
+        "Help desk social engineering",
+        "MFA fatigue attacks",
+        "Okta targeting"
+      ],
+      "references": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-320a"
+      ]
+    },
+    {
+      "name": "LockBit",
+      "aliases": ["LockBit 3.0", "LockBit Black"],
+      "description": "Prolific ransomware-as-a-service operation with automated attack capabilities",
+      "origin": "Unknown",
+      "motivation": "Financial",
+      "targeted_infrastructure": ["ad"],
+      "targeted_sectors": ["Manufacturing", "Healthcare", "Government", "Financial Services"],
+      "ttps": [
+        "T1486",
+        "T1003.001",
+        "T1021.002",
+        "T1059.001",
+        "T1490"
+      ],
+      "recent_campaigns": [
+        "Automated ransomware deployment",
+        "Triple extortion schemes",
+        "Critical infrastructure attacks"
+      ],
+      "references": [
+        "https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-165a"
+      ]
+    },
+    {
+      "name": "TeamTNT",
+      "aliases": [],
+      "description": "Cryptomining and credential-stealing group targeting cloud environments and container infrastructure",
+      "origin": "Unknown",
+      "motivation": "Financial",
+      "targeted_infrastructure": ["aws", "gcp"],
+      "targeted_sectors": ["Technology", "Cloud Services"],
+      "ttps": [
+        "T1552.005",
+        "T1496",
+        "T1059.004",
+        "T1053.003"
+      ],
+      "recent_campaigns": [
+        "Kubernetes cluster compromise",
+        "Docker container attacks",
+        "Cloud credential harvesting"
+      ],
+      "references": [
+        "https://attack.mitre.org/groups/G0139/"
+      ]
+    }
+  ]
+}

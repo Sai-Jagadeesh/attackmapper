@@ -1,0 +1,159 @@
+{
+  "version": "1.0.0",
+  "description": "MITRE ATT&CK technique mappings for reference",
+  "matrices": ["enterprise", "cloud"],
+  "tactics": {
+    "reconnaissance": {
+      "id": "TA0043",
+      "name": "Reconnaissance",
+      "description": "The adversary is trying to gather information they can use to plan future operations."
+    },
+    "initial_access": {
+      "id": "TA0001",
+      "name": "Initial Access",
+      "description": "The adversary is trying to get into your network."
+    },
+    "execution": {
+      "id": "TA0002",
+      "name": "Execution",
+      "description": "The adversary is trying to run malicious code."
+    },
+    "persistence": {
+      "id": "TA0003",
+      "name": "Persistence",
+      "description": "The adversary is trying to maintain their foothold."
+    },
+    "privilege_escalation": {
+      "id": "TA0004",
+      "name": "Privilege Escalation",
+      "description": "The adversary is trying to gain higher-level permissions."
+    },
+    "defense_evasion": {
+      "id": "TA0005",
+      "name": "Defense Evasion",
+      "description": "The adversary is trying to avoid being detected."
+    },
+    "credential_access": {
+      "id": "TA0006",
+      "name": "Credential Access",
+      "description": "The adversary is trying to steal account names and passwords."
+    },
+    "discovery": {
+      "id": "TA0007",
+      "name": "Discovery",
+      "description": "The adversary is trying to figure out your environment."
+    },
+    "lateral_movement": {
+      "id": "TA0008",
+      "name": "Lateral Movement",
+      "description": "The adversary is trying to move through your environment."
+    },
+    "collection": {
+      "id": "TA0009",
+      "name": "Collection",
+      "description": "The adversary is trying to gather data of interest to their goal."
+    },
+    "exfiltration": {
+      "id": "TA0010",
+      "name": "Exfiltration",
+      "description": "The adversary is trying to steal data."
+    },
+    "impact": {
+      "id": "TA0040",
+      "name": "Impact",
+      "description": "The adversary is trying to manipulate, interrupt, or destroy your systems and data."
+    }
+  },
+  "key_techniques": {
+    "T1003": {
+      "name": "OS Credential Dumping",
+      "subtechniques": {
+        "T1003.001": "LSASS Memory",
+        "T1003.002": "Security Account Manager",
+        "T1003.003": "NTDS",
+        "T1003.004": "LSA Secrets",
+        "T1003.005": "Cached Domain Credentials",
+        "T1003.006": "DCSync"
+      }
+    },
+    "T1021": {
+      "name": "Remote Services",
+      "subtechniques": {
+        "T1021.001": "Remote Desktop Protocol",
+        "T1021.002": "SMB/Windows Admin Shares",
+        "T1021.003": "Distributed Component Object Model",
+        "T1021.004": "SSH",
+        "T1021.005": "VNC",
+        "T1021.006": "Windows Remote Management"
+      }
+    },
+    "T1078": {
+      "name": "Valid Accounts",
+      "subtechniques": {
+        "T1078.001": "Default Accounts",
+        "T1078.002": "Domain Accounts",
+        "T1078.003": "Local Accounts",
+        "T1078.004": "Cloud Accounts"
+      }
+    },
+    "T1087": {
+      "name": "Account Discovery",
+      "subtechniques": {
+        "T1087.001": "Local Account",
+        "T1087.002": "Domain Account",
+        "T1087.003": "Email Account",
+        "T1087.004": "Cloud Account"
+      }
+    },
+    "T1110": {
+      "name": "Brute Force",
+      "subtechniques": {
+        "T1110.001": "Password Guessing",
+        "T1110.002": "Password Cracking",
+        "T1110.003": "Password Spraying",
+        "T1110.004": "Credential Stuffing"
+      }
+    },
+    "T1550": {
+      "name": "Use Alternate Authentication Material",
+      "subtechniques": {
+        "T1550.001": "Application Access Token",
+        "T1550.002": "Pass the Hash",
+        "T1550.003": "Pass the Ticket",
+        "T1550.004": "Web Session Cookie"
+      }
+    },
+    "T1557": {
+      "name": "Adversary-in-the-Middle",
+      "subtechniques": {
+        "T1557.001": "LLMNR/NBT-NS Poisoning and SMB Relay",
+        "T1557.002": "ARP Cache Poisoning",
+        "T1557.003": "DHCP Spoofing"
+      }
+    },
+    "T1558": {
+      "name": "Steal or Forge Kerberos Tickets",
+      "subtechniques": {
+        "T1558.001": "Golden Ticket",
+        "T1558.002": "Silver Ticket",
+        "T1558.003": "Kerberoasting",
+        "T1558.004": "AS-REP Roasting"
+      }
+    },
+    "T1566": {
+      "name": "Phishing",
+      "subtechniques": {
+        "T1566.001": "Spearphishing Attachment",
+        "T1566.002": "Spearphishing Link",
+        "T1566.003": "Spearphishing via Service"
+      }
+    },
+    "T1484": {
+      "name": "Domain Policy Modification",
+      "subtechniques": {
+        "T1484.001": "Group Policy Modification",
+        "T1484.002": "Domain Trust Modification"
+      }
+    }
+  }
+}

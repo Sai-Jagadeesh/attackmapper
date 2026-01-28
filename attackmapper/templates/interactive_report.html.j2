@@ -1,0 +1,2320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - AttackMapper</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Background layers - subtle depth */
+            --bg-base: #0f1117;
+            --bg-surface: #151921;
+            --bg-elevated: #1c2230;
+            --bg-overlay: #232b3b;
+            --bg-hover: rgba(255, 255, 255, 0.04);
+            --bg-active: rgba(255, 255, 255, 0.06);
+
+            /* Brand & accents */
+            --accent-primary: #6366f1;
+            --accent-primary-hover: #818cf8;
+            --accent-primary-muted: rgba(99, 102, 241, 0.15);
+            --accent-secondary: #22d3ee;
+            --accent-tertiary: #a78bfa;
+
+            /* Semantic colors */
+            --color-success: #34d399;
+            --color-success-muted: rgba(52, 211, 153, 0.15);
+            --color-warning: #fbbf24;
+            --color-warning-muted: rgba(251, 191, 36, 0.15);
+            --color-danger: #f87171;
+            --color-danger-muted: rgba(248, 113, 113, 0.15);
+            --color-info: #60a5fa;
+            --color-info-muted: rgba(96, 165, 250, 0.15);
+
+            /* Text hierarchy */
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --text-muted: #475569;
+
+            /* Borders & dividers */
+            --border-subtle: rgba(255, 255, 255, 0.06);
+            --border-default: rgba(255, 255, 255, 0.1);
+            --border-strong: rgba(255, 255, 255, 0.15);
+
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.25);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.15);
+
+            /* Spacing */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-5: 20px;
+            --space-6: 24px;
+            --space-8: 32px;
+
+            /* Border radius */
+            --radius-sm: 6px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+
+            /* Transitions */
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.2s ease;
+            --transition-slow: 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-base);
+            color: var(--text-primary);
+            line-height: 1.6;
+            font-size: 14px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========================================
+           Sidebar
+           ======================================== */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--bg-surface);
+            border-right: 1px solid var(--border-subtle);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: var(--space-5);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary));
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .infra-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            background: var(--accent-primary-muted);
+            color: var(--accent-primary-hover);
+            padding: var(--space-1) var(--space-3);
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .infra-badge::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+        }
+
+        /* Search */
+        .search-container {
+            padding: var(--space-4) var(--space-5);
+        }
+
+        .search-wrapper {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: var(--space-3);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: var(--space-3) var(--space-4);
+            padding-left: 36px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: inherit;
+            transition: var(--transition-fast);
+        }
+
+        .search-input:hover {
+            border-color: var(--border-default);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px var(--accent-primary-muted);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Sidebar content */
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-4) var(--space-5);
+        }
+
+        .filter-section {
+            margin-bottom: var(--space-6);
+        }
+
+        .filter-title {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: var(--space-3);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+        }
+
+        .filter-checkbox {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .filter-checkbox:hover {
+            background: var(--bg-hover);
+        }
+
+        .filter-checkbox input[type="checkbox"] {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 1.5px solid var(--border-strong);
+            border-radius: 4px;
+            background: transparent;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            position: relative;
+        }
+
+        .filter-checkbox input[type="checkbox"]:checked {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .filter-checkbox input[type="checkbox"]:checked::after {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 1px;
+            width: 5px;
+            height: 9px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+
+        .filter-checkbox label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            flex: 1;
+            transition: var(--transition-fast);
+        }
+
+        .filter-checkbox:hover label {
+            color: var(--text-primary);
+        }
+
+        .filter-checkbox .count {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: var(--bg-overlay);
+            padding: 2px 8px;
+            border-radius: 10px;
+            min-width: 28px;
+            text-align: center;
+        }
+
+        /* Phase indicator dots */
+        .phase-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Sidebar footer stats */
+        .sidebar-footer {
+            padding: var(--space-4) var(--space-5);
+            border-top: 1px solid var(--border-subtle);
+            background: var(--bg-elevated);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-3);
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: var(--space-3);
+            background: var(--bg-surface);
+            border-radius: var(--radius-sm);
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* ========================================
+           Main Content
+           ======================================== */
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            background: var(--bg-base);
+        }
+
+        /* Top header bar */
+        .top-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(15, 17, 23, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: var(--space-4) var(--space-6);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-muted);
+        }
+
+        .breadcrumb-current {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            padding: var(--space-2) var(--space-4);
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            border: 1px solid var(--border-default);
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            height: 36px;
+        }
+
+        .btn:hover {
+            background: var(--bg-overlay);
+            border-color: var(--border-strong);
+            color: var(--text-primary);
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-primary-hover);
+            border-color: var(--accent-primary-hover);
+        }
+
+        .btn-icon {
+            width: 36px;
+            padding: 0;
+        }
+
+        /* Page content */
+        .page-content {
+            padding: var(--space-6);
+            max-width: 1600px;
+        }
+
+        /* Dashboard metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-5);
+            margin-bottom: var(--space-6);
+        }
+
+        .metric-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: var(--space-5);
+            transition: var(--transition-fast);
+        }
+
+        .metric-card:hover {
+            border-color: var(--border-default);
+            box-shadow: var(--shadow-md);
+        }
+
+        .metric-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: var(--space-3);
+        }
+
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .metric-icon.critical { background: var(--color-danger-muted); }
+        .metric-icon.high { background: var(--color-warning-muted); }
+        .metric-icon.medium { background: var(--color-info-muted); }
+        .metric-icon.total { background: var(--accent-primary-muted); }
+
+        .metric-trend {
+            font-size: 12px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .metric-trend.up {
+            background: var(--color-danger-muted);
+            color: var(--color-danger);
+        }
+
+        .metric-trend.down {
+            background: var(--color-success-muted);
+            color: var(--color-success);
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-bottom: var(--space-1);
+        }
+
+        .metric-label {
+            font-size: 13px;
+            color: var(--text-tertiary);
+        }
+
+        .metric-sublabel {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: var(--space-1);
+        }
+
+        /* Section cards */
+        .section-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-5);
+            overflow: hidden;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-4) var(--space-5);
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border-subtle);
+            cursor: pointer;
+            user-select: none;
+            transition: var(--transition-fast);
+        }
+
+        .section-header:hover {
+            background: var(--bg-overlay);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .section-title-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .section-title-icon.graph { background: var(--accent-primary-muted); }
+        .section-title-icon.threat { background: var(--color-danger-muted); }
+
+        .section-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .section-badge {
+            font-size: 12px;
+            font-weight: 500;
+            padding: var(--space-1) var(--space-3);
+            background: var(--bg-surface);
+            border-radius: 10px;
+            color: var(--text-secondary);
+        }
+
+        .section-toggle {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            transition: var(--transition-fast);
+        }
+
+        .section-toggle svg {
+            transition: transform var(--transition-fast);
+        }
+
+        .section-header.collapsed .section-toggle svg {
+            transform: rotate(-90deg);
+        }
+
+        .section-content {
+            padding: var(--space-5);
+        }
+
+        .section-header.collapsed + .section-content {
+            display: none;
+        }
+
+        /* Threat Intel Grid */
+        .threat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .threat-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+        }
+
+        .threat-card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-3);
+            padding-bottom: var(--space-3);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .threat-card-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            background: var(--color-danger-muted);
+        }
+
+        .threat-card-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .threat-list {
+            list-style: none;
+        }
+
+        .threat-list-item {
+            padding: var(--space-2) 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 13px;
+        }
+
+        .threat-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .threat-list-item strong {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .threat-list-item small {
+            display: block;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+            font-size: 12px;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .badge-critical {
+            background: var(--color-danger-muted);
+            color: var(--color-danger);
+        }
+
+        .badge-high {
+            background: var(--color-warning-muted);
+            color: var(--color-warning);
+        }
+
+        .badge-medium {
+            background: var(--color-info-muted);
+            color: var(--color-info);
+        }
+
+        .badge-low {
+            background: var(--color-success-muted);
+            color: var(--color-success);
+        }
+
+        /* Graph Section */
+        .graph-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+            flex-wrap: wrap;
+        }
+
+        .view-toggle {
+            display: flex;
+            background: var(--bg-overlay);
+            border-radius: var(--radius-md);
+            padding: 3px;
+        }
+
+        .view-toggle button {
+            padding: var(--space-2) var(--space-4);
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            font-family: inherit;
+            border-radius: var(--radius-sm);
+            transition: var(--transition-fast);
+        }
+
+        .view-toggle button:hover {
+            color: var(--text-primary);
+        }
+
+        .view-toggle button.active {
+            background: var(--accent-primary);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        #attackGraph {
+            width: 100%;
+            height: 500px;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .graph-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            margin-top: var(--space-4);
+            padding: var(--space-3) var(--space-4);
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* Phase Sections */
+        .phase-section {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            margin-bottom: var(--space-4);
+            overflow: hidden;
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-4) var(--space-5);
+            cursor: pointer;
+            user-select: none;
+            transition: var(--transition-fast);
+        }
+
+        .phase-header:hover {
+            background: var(--bg-hover);
+        }
+
+        .phase-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .phase-indicator {
+            width: 4px;
+            height: 28px;
+            border-radius: 2px;
+        }
+
+        .phase-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .phase-count {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            background: var(--bg-overlay);
+            padding: 2px 10px;
+            border-radius: 10px;
+        }
+
+        .phase-toggle {
+            color: var(--text-tertiary);
+            transition: transform var(--transition-fast);
+        }
+
+        .phase-header.collapsed .phase-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .phase-content {
+            padding: 0 var(--space-5) var(--space-5);
+        }
+
+        .phase-header.collapsed + .phase-content {
+            display: none;
+        }
+
+        /* Phase colors */
+        .phase-reconnaissance .phase-indicator { background: #5eadb8; }
+        .phase-initial_access .phase-indicator { background: #5a9a6a; }
+        .phase-execution .phase-indicator { background: #c9a55a; }
+        .phase-persistence .phase-indicator { background: #9a8ac8; }
+        .phase-privilege_escalation .phase-indicator { background: #c87a7a; }
+        .phase-defense_evasion .phase-indicator { background: #6a9aca; }
+        .phase-credential_access .phase-indicator { background: #c8708a; }
+        .phase-discovery .phase-indicator { background: #5a9aaa; }
+        .phase-lateral_movement .phase-indicator { background: #aaa05a; }
+        .phase-collection .phase-indicator { background: #9a6aaa; }
+        .phase-exfiltration .phase-indicator { background: #5a8aca; }
+        .phase-impact .phase-indicator { background: #aa5a5a; }
+
+        /* Technique Cards */
+        .technique-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-3);
+            overflow: hidden;
+            transition: var(--transition-fast);
+        }
+
+        .technique-card:hover {
+            border-color: var(--border-default);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .technique-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .technique-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: var(--space-4);
+            cursor: pointer;
+            gap: var(--space-4);
+        }
+
+        .technique-main {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .technique-title {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-2);
+            flex-wrap: wrap;
+        }
+
+        .technique-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .technique-id {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 12px;
+            color: var(--text-tertiary);
+            background: var(--bg-overlay);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .technique-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .technique-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            flex-shrink: 0;
+        }
+
+        .technique-expand {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-tertiary);
+            transition: transform var(--transition-fast);
+        }
+
+        .technique-card.expanded .technique-expand {
+            transform: rotate(180deg);
+        }
+
+        .technique-details {
+            display: none;
+            padding: 0 var(--space-4) var(--space-4);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .technique-card.expanded .technique-details {
+            display: block;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-4);
+            padding-top: var(--space-4);
+        }
+
+        .detail-item {
+            background: var(--bg-surface);
+            padding: var(--space-3);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .detail-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            margin-bottom: var(--space-2);
+        }
+
+        .detail-value {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .tools-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+        }
+
+        .tool-tag {
+            background: var(--accent-primary-muted);
+            border: 1px solid transparent;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            color: var(--accent-primary-hover);
+        }
+
+        .prereq-list, .ref-list {
+            list-style: none;
+        }
+
+        .prereq-list li, .ref-list li {
+            padding: 3px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .prereq-list li::before {
+            content: "•";
+            color: var(--text-muted);
+            margin-right: var(--space-2);
+        }
+
+        .ref-list a {
+            color: var(--accent-primary-hover);
+            text-decoration: none;
+            transition: var(--transition-fast);
+        }
+
+        .ref-list a:hover {
+            text-decoration: underline;
+        }
+
+        /* Commands section */
+        .commands-section {
+            margin-top: var(--space-4);
+            padding-top: var(--space-4);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .commands-section .detail-label {
+            color: var(--color-success);
+            margin-bottom: var(--space-3);
+        }
+
+        .command-block {
+            background: var(--bg-base);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .command-block pre {
+            margin: 0;
+            padding: var(--space-3) var(--space-4);
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--color-success);
+            white-space: pre-wrap;
+            word-break: break-all;
+            overflow-x: auto;
+        }
+
+        .command-block .copy-btn {
+            position: absolute;
+            top: var(--space-2);
+            right: var(--space-2);
+            background: var(--bg-overlay);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-tertiary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            opacity: 0;
+            transition: var(--transition-fast);
+        }
+
+        .command-block:hover .copy-btn {
+            opacity: 1;
+        }
+
+        .command-block .copy-btn:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: white;
+        }
+
+        /* No results */
+        .no-results {
+            text-align: center;
+            padding: var(--space-8) var(--space-5);
+            color: var(--text-tertiary);
+        }
+
+        .no-results-icon {
+            font-size: 48px;
+            margin-bottom: var(--space-4);
+            opacity: 0.5;
+        }
+
+        .no-results p {
+            font-size: 14px;
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* SVG Icons inline */
+        .icon-svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* Graph tooltip */
+        .graph-tooltip {
+            position: absolute;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            font-size: 13px;
+            max-width: 300px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+            z-index: 1000;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .graph-tooltip.visible {
+            opacity: 1;
+        }
+
+        .graph-tooltip h4 {
+            color: var(--text-primary);
+            margin-bottom: var(--space-2);
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .graph-tooltip .mitre-id {
+            color: var(--text-tertiary);
+            font-family: monospace;
+            font-size: 11px;
+            margin-bottom: var(--space-2);
+        }
+
+        .graph-tooltip p {
+            color: var(--text-secondary);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .graph-tooltip .tools {
+            margin-top: var(--space-2);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .graph-tooltip .tool-tag {
+            padding: 2px 6px;
+            font-size: 10px;
+        }
+
+        /* Graph node styles */
+        .graph-node {
+            cursor: pointer;
+        }
+
+        .graph-node circle {
+            stroke-width: 2px;
+            transition: all var(--transition-fast);
+        }
+
+        .graph-node:hover circle {
+            stroke-width: 3px;
+            filter: brightness(1.15);
+        }
+
+        .graph-node text {
+            font-size: 10px;
+            fill: var(--text-secondary);
+            pointer-events: none;
+        }
+
+        .graph-link {
+            stroke: rgba(100, 116, 139, 0.3);
+            stroke-width: 1.5px;
+            fill: none;
+        }
+
+        .phase-lane-label {
+            fill: var(--text-tertiary);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 1024px) {
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                transition: left var(--transition-slow);
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .mobile-toggle {
+                display: flex;
+                position: fixed;
+                bottom: var(--space-5);
+                right: var(--space-5);
+                z-index: 200;
+                width: 56px;
+                height: 56px;
+                border-radius: 50%;
+                background: var(--accent-primary);
+                border: none;
+                color: white;
+                font-size: 20px;
+                cursor: pointer;
+                box-shadow: var(--shadow-lg);
+                align-items: center;
+                justify-content: center;
+            }
+
+            .overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.6);
+                z-index: 50;
+            }
+
+            .overlay.open {
+                display: block;
+            }
+        }
+
+        @media (min-width: 901px) {
+            .mobile-toggle, .overlay {
+                display: none;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            .sidebar, .mobile-toggle, .overlay, .header-actions, .top-header {
+                display: none !important;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .phase-content, .technique-details, .section-content {
+                display: block !important;
+            }
+
+            .technique-card, .phase-section {
+                break-inside: avoid;
+            }
+
+            body {
+                background: white;
+                color: black;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-base);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-overlay);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile overlay -->
+    <div class="overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">A</div>
+                <span class="logo-text">AttackMapper</span>
+            </div>
+            <span class="infra-badge">{{ infrastructure | upper }}</span>
+        </div>
+
+        <div class="search-container">
+            <div class="search-wrapper">
+                <span class="search-icon">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </span>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search techniques..." oninput="filterTechniques()">
+            </div>
+        </div>
+
+        <div class="sidebar-content">
+            <div class="filter-section">
+                <div class="filter-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"></path>
+                    </svg>
+                    Attack Phases
+                </div>
+                <div class="filter-group" id="phaseFilters">
+                    {% for phase in phase_order %}
+                    {% if phase in techniques_by_phase %}
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="phase-{{ phase }}" value="{{ phase }}" checked onchange="filterTechniques()">
+                        <label for="phase-{{ phase }}">{{ phase_display_names[phase] }}</label>
+                        <span class="count">{{ techniques_by_phase[phase] | length }}</span>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-title">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                    Risk Level
+                </div>
+                <div class="filter-group" id="riskFilters">
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="risk-critical" value="critical" checked onchange="filterTechniques()">
+                        <label for="risk-critical">Critical</label>
+                        <span class="count" id="count-critical">0</span>
+                    </div>
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="risk-high" value="high" checked onchange="filterTechniques()">
+                        <label for="risk-high">High</label>
+                        <span class="count" id="count-high">0</span>
+                    </div>
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="risk-medium" value="medium" checked onchange="filterTechniques()">
+                        <label for="risk-medium">Medium</label>
+                        <span class="count" id="count-medium">0</span>
+                    </div>
+                    <div class="filter-checkbox">
+                        <input type="checkbox" id="risk-low" value="low" checked onchange="filterTechniques()">
+                        <label for="risk-low">Low</label>
+                        <span class="count" id="count-low">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value">{{ total_techniques }}</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="visibleCount">{{ total_techniques }}</div>
+                    <div class="stat-label">Visible</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="top-header">
+            <div class="breadcrumb">
+                <span>Reports</span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current">{{ title }}</span>
+            </div>
+            <div class="header-actions">
+                <button class="btn" onclick="expandAll()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m7 15 5 5 5-5"></path>
+                        <path d="m7 9 5-5 5 5"></path>
+                    </svg>
+                    Expand All
+                </button>
+                <button class="btn" onclick="collapseAll()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m17 9-5 5-5-5"></path>
+                    </svg>
+                    Collapse
+                </button>
+                <button class="btn btn-primary" onclick="window.print()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7,10 12,15 17,10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export
+                </button>
+            </div>
+        </header>
+
+        <div class="page-content">
+            <!-- Dashboard Metrics -->
+            <div class="metrics-grid">
+                {% if threat_intel and threat_intel.critical_cves %}
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-icon critical">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                        <span class="metric-trend up">Live</span>
+                    </div>
+                    <div class="metric-value">{{ threat_intel.critical_cves | length }}</div>
+                    <div class="metric-label">Critical CVEs</div>
+                    <div class="metric-sublabel">Actively exploited vulnerabilities</div>
+                </div>
+                {% else %}
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-icon critical">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="metric-critical">0</div>
+                    <div class="metric-label">Critical/High Risk</div>
+                    <div class="metric-sublabel">Techniques requiring immediate attention</div>
+                </div>
+                {% endif %}
+
+                {% if threat_intel and threat_intel.active_threat_actors %}
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-icon high">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <span class="metric-trend up">Active</span>
+                    </div>
+                    <div class="metric-value">{{ threat_intel.active_threat_actors | length }}</div>
+                    <div class="metric-label">Threat Actors</div>
+                    <div class="metric-sublabel">Known adversary groups targeting this infra</div>
+                </div>
+                {% else %}
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-icon high">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fbbf24" stroke-width="2">
+                                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26 12,2"></polygon>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="metric-value">{{ techniques_by_phase | length }}</div>
+                    <div class="metric-label">Attack Phases</div>
+                    <div class="metric-sublabel">MITRE ATT&CK kill chain coverage</div>
+                </div>
+                {% endif %}
+
+                {% if threat_intel and threat_intel.trending_techniques %}
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-icon medium">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+                                <polyline points="22,7 13.5,15.5 8.5,10.5 2,17"></polyline>
+                                <polyline points="16,7 22,7 22,13"></polyline>
+                            </svg>
+                        </div>
+                        <span class="metric-trend up">Trending</span>
+                    </div>
+                    <div class="metric-value">{{ threat_intel.trending_techniques | length }}</div>
+                    <div class="metric-label">Trending TTPs</div>
+                    <div class="metric-sublabel">Techniques seeing increased usage</div>
+                </div>
+                {% else %}
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-icon medium">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+                                <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="metric-value" id="metric-tools">0</div>
+                    <div class="metric-label">Unique Tools</div>
+                    <div class="metric-sublabel">Attack tools and frameworks mapped</div>
+                </div>
+                {% endif %}
+
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <div class="metric-icon total">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="metric-value">{{ total_techniques }}</div>
+                    <div class="metric-label">MITRE Techniques</div>
+                    <div class="metric-sublabel">Mapped to {{ infrastructure | upper }} infrastructure</div>
+                </div>
+            </div>
+
+            {% if threat_intel %}
+            <!-- Threat Intelligence Section -->
+            <div class="section-card">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <div class="section-title">
+                        <div class="section-title-icon threat">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                            </svg>
+                        </div>
+                        Active Threat Intelligence
+                    </div>
+                    <div class="section-meta">
+                        {% if threat_intel.last_updated %}
+                        <span class="section-badge">Updated: {{ threat_intel.last_updated }}</span>
+                        {% endif %}
+                        <span class="section-toggle">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="threat-grid">
+                        {% if threat_intel.critical_cves %}
+                        <div class="threat-card">
+                            <div class="threat-card-header">
+                                <div class="threat-card-icon">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                </div>
+                                <span class="threat-card-title">Critical CVEs</span>
+                            </div>
+                            <ul class="threat-list">
+                                {% for cve in threat_intel.critical_cves[:6] %}
+                                <li class="threat-list-item">
+                                    <strong>{{ cve.cve_id }}</strong>
+                                    {% if cve.cvss_score >= 9.0 %}
+                                    <span class="badge badge-critical">{{ cve.cvss_score }}</span>
+                                    {% elif cve.cvss_score >= 7.0 %}
+                                    <span class="badge badge-high">{{ cve.cvss_score }}</span>
+                                    {% else %}
+                                    <span class="badge badge-medium">{{ cve.cvss_score }}</span>
+                                    {% endif %}
+                                    <small>{{ cve.description[:80] }}{% if cve.description|length > 80 %}...{% endif %}</small>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        {% if threat_intel.active_threat_actors %}
+                        <div class="threat-card">
+                            <div class="threat-card-header">
+                                <div class="threat-card-icon">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                </div>
+                                <span class="threat-card-title">Active Threat Actors</span>
+                            </div>
+                            <ul class="threat-list">
+                                {% for actor in threat_intel.active_threat_actors[:5] %}
+                                <li class="threat-list-item">
+                                    <strong>{{ actor.name }}</strong>
+                                    {% if actor.aliases %}
+                                    <small>AKA: {{ actor.aliases[:2] | join(", ") }}</small>
+                                    {% endif %}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        {% if threat_intel.trending_techniques %}
+                        <div class="threat-card">
+                            <div class="threat-card-header">
+                                <div class="threat-card-icon">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2">
+                                        <polyline points="22,7 13.5,15.5 8.5,10.5 2,17"></polyline>
+                                        <polyline points="16,7 22,7 22,13"></polyline>
+                                    </svg>
+                                </div>
+                                <span class="threat-card-title">Trending Techniques</span>
+                            </div>
+                            <ul class="threat-list">
+                                {% for tech in threat_intel.trending_techniques[:6] %}
+                                <li class="threat-list-item">{{ tech }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Attack Graph Visualization -->
+            <div class="section-card">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <div class="section-title">
+                        <div class="section-title-icon graph">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2">
+                                <circle cx="18" cy="5" r="3"></circle>
+                                <circle cx="6" cy="12" r="3"></circle>
+                                <circle cx="18" cy="19" r="3"></circle>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                            </svg>
+                        </div>
+                        Attack Flow Visualization
+                    </div>
+                    <div class="section-meta">
+                        <span class="section-badge">{{ techniques_by_phase | length }} phases</span>
+                        <span class="section-toggle">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+                <div class="section-content">
+                    <div class="graph-controls">
+                        <div class="view-toggle">
+                            <button class="active" onclick="setGraphView('flow')" id="flowViewBtn">Kill Chain</button>
+                            <button onclick="setGraphView('force')" id="forceViewBtn">Force Graph</button>
+                            <button onclick="setGraphView('radial')" id="radialViewBtn">Radial</button>
+                        </div>
+                        <button class="btn" onclick="resetGraphZoom()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                                <path d="M3 3v5h5"></path>
+                            </svg>
+                            Reset
+                        </button>
+                        <button class="btn" onclick="exportGraphSVG()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7,10 12,15 17,10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Export SVG
+                        </button>
+                    </div>
+                    <div id="attackGraph">
+                        <div class="graph-tooltip" id="graphTooltip"></div>
+                    </div>
+                    <div class="graph-legend" id="graphLegend"></div>
+                </div>
+            </div>
+
+            <!-- Techniques by Phase -->
+            <div id="techniquesContainer">
+                {% for phase in phase_order %}
+                {% if phase in techniques_by_phase %}
+                <section class="phase-section phase-{{ phase }}" data-phase="{{ phase }}">
+                    <div class="phase-header" onclick="togglePhase(this)">
+                        <div class="phase-title">
+                            <div class="phase-indicator"></div>
+                            <span class="phase-name">{{ phase_display_names[phase] }}</span>
+                            <span class="phase-count">{{ techniques_by_phase[phase] | length }} techniques</span>
+                        </div>
+                        <span class="phase-toggle">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6,9 12,15 18,9"></polyline>
+                            </svg>
+                        </span>
+                    </div>
+                    <div class="phase-content">
+                        {% for tech in techniques_by_phase[phase] %}
+                        <div class="technique-card" data-phase="{{ phase }}" data-risk="{{ tech.risk_level }}" data-name="{{ tech.name | lower }}" data-id="{{ tech.mitre_id | lower }}" data-desc="{{ tech.description | lower }}" data-tools="{{ tech.tools | join(' ') | lower }}">
+                            <div class="technique-card-header" onclick="toggleTechnique(this.parentElement)">
+                                <div class="technique-main">
+                                    <div class="technique-title">
+                                        <span class="technique-name">{{ tech.name }}</span>
+                                        <span class="technique-id">{{ tech.mitre_id }}</span>
+                                    </div>
+                                    <p class="technique-desc">{{ tech.description }}</p>
+                                </div>
+                                <div class="technique-meta">
+                                    <span class="badge badge-{{ tech.risk_level }}">{{ tech.risk_level }}</span>
+                                    <span class="technique-expand">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="6,9 12,15 18,9"></polyline>
+                                        </svg>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="technique-details">
+                                <div class="detail-grid">
+                                    {% if tech.tools %}
+                                    <div class="detail-item">
+                                        <div class="detail-label">Tools</div>
+                                        <div class="tools-list">
+                                            {% for tool in tech.tools %}
+                                            <span class="tool-tag">{{ tool }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if tech.prerequisites %}
+                                    <div class="detail-item">
+                                        <div class="detail-label">Prerequisites</div>
+                                        <ul class="prereq-list">
+                                            {% for prereq in tech.prerequisites %}
+                                            <li>{{ prereq }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if tech.detection %}
+                                    <div class="detail-item">
+                                        <div class="detail-label">Detection</div>
+                                        <div class="detail-value">{{ tech.detection }}</div>
+                                    </div>
+                                    {% endif %}
+
+                                    {% if tech.references %}
+                                    <div class="detail-item">
+                                        <div class="detail-label">References</div>
+                                        <ul class="ref-list">
+                                            {% for ref in tech.references[:3] %}
+                                            <li><a href="{{ ref }}" target="_blank" rel="noopener">{{ ref | truncate(45) }}</a></li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                {% if tech.commands %}
+                                <div class="commands-section">
+                                    <div class="detail-label">Exploitation Commands</div>
+                                    {% for cmd in tech.commands %}
+                                    <div class="command-block">
+                                        <pre>{{ cmd }}</pre>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </section>
+                {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="no-results hidden" id="noResults">
+                <div class="no-results-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                </div>
+                <p>No techniques match your current filters.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Mobile toggle button -->
+    <button class="mobile-toggle" onclick="toggleSidebar()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+
+    <script>
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateRiskCounts();
+            updateMetrics();
+        });
+
+        function updateRiskCounts() {
+            const counts = { critical: 0, high: 0, medium: 0, low: 0 };
+            document.querySelectorAll('.technique-card').forEach(card => {
+                const risk = card.dataset.risk;
+                if (counts.hasOwnProperty(risk)) {
+                    counts[risk]++;
+                }
+            });
+            Object.keys(counts).forEach(risk => {
+                const el = document.getElementById('count-' + risk);
+                if (el) el.textContent = counts[risk];
+            });
+            return counts;
+        }
+
+        function updateMetrics() {
+            const counts = updateRiskCounts();
+
+            // Update critical/high count if element exists (no threat intel)
+            const criticalEl = document.getElementById('metric-critical');
+            if (criticalEl) {
+                criticalEl.textContent = counts.critical + counts.high;
+            }
+
+            // Calculate unique tools
+            const toolsSet = new Set();
+            document.querySelectorAll('.tool-tag').forEach(tag => {
+                toolsSet.add(tag.textContent.trim().toLowerCase());
+            });
+            const toolsEl = document.getElementById('metric-tools');
+            if (toolsEl) {
+                toolsEl.textContent = toolsSet.size;
+            }
+        }
+
+        function filterTechniques() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const selectedPhases = Array.from(
+                document.querySelectorAll('#phaseFilters input:checked')
+            ).map(cb => cb.value);
+            const selectedRisks = Array.from(
+                document.querySelectorAll('#riskFilters input:checked')
+            ).map(cb => cb.value);
+
+            let visibleCount = 0;
+            let visiblePhases = new Set();
+
+            document.querySelectorAll('.technique-card').forEach(card => {
+                const phase = card.dataset.phase;
+                const risk = card.dataset.risk;
+                const name = card.dataset.name;
+                const id = card.dataset.id;
+                const desc = card.dataset.desc;
+                const tools = card.dataset.tools;
+
+                const matchesPhase = selectedPhases.includes(phase);
+                const matchesRisk = selectedRisks.includes(risk);
+                const matchesSearch = !searchQuery ||
+                    name.includes(searchQuery) ||
+                    id.includes(searchQuery) ||
+                    desc.includes(searchQuery) ||
+                    tools.includes(searchQuery);
+
+                if (matchesPhase && matchesRisk && matchesSearch) {
+                    card.classList.remove('hidden');
+                    visibleCount++;
+                    visiblePhases.add(phase);
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            document.querySelectorAll('.phase-section').forEach(section => {
+                const phase = section.dataset.phase;
+                section.classList.toggle('hidden', !visiblePhases.has(phase));
+            });
+
+            document.getElementById('visibleCount').textContent = visibleCount;
+            document.getElementById('noResults').classList.toggle('hidden', visibleCount > 0);
+        }
+
+        function togglePhase(header) {
+            header.classList.toggle('collapsed');
+        }
+
+        function toggleTechnique(card) {
+            card.classList.toggle('expanded');
+        }
+
+        function toggleSection(header) {
+            header.classList.toggle('collapsed');
+        }
+
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('open');
+            document.querySelector('.overlay').classList.toggle('open');
+        }
+
+        function expandAll() {
+            document.querySelectorAll('.phase-header').forEach(h => h.classList.remove('collapsed'));
+            document.querySelectorAll('.technique-card').forEach(c => c.classList.add('expanded'));
+            document.querySelectorAll('.section-header').forEach(h => h.classList.remove('collapsed'));
+        }
+
+        function collapseAll() {
+            document.querySelectorAll('.phase-header').forEach(h => h.classList.add('collapsed'));
+            document.querySelectorAll('.technique-card').forEach(c => c.classList.remove('expanded'));
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+            if (e.key === 'Escape') {
+                document.getElementById('searchInput').value = '';
+                filterTechniques();
+            }
+        });
+
+        // ========================================
+        // Attack Graph Visualization
+        // ========================================
+        const phaseColors = {
+            reconnaissance: '#5eadb8',
+            initial_access: '#5a9a6a',
+            execution: '#c9a55a',
+            persistence: '#9a8ac8',
+            privilege_escalation: '#c87a7a',
+            defense_evasion: '#6a9aca',
+            credential_access: '#c8708a',
+            discovery: '#5a9aaa',
+            lateral_movement: '#aaa05a',
+            collection: '#9a6aaa',
+            exfiltration: '#5a8aca',
+            impact: '#aa5a5a'
+        };
+
+        const phaseOrder = [
+            'reconnaissance', 'initial_access', 'execution', 'persistence',
+            'privilege_escalation', 'defense_evasion', 'credential_access',
+            'discovery', 'lateral_movement', 'collection', 'exfiltration', 'impact'
+        ];
+
+        const phaseDisplayNames = {
+            reconnaissance: 'Recon',
+            initial_access: 'Initial Access',
+            execution: 'Execution',
+            persistence: 'Persistence',
+            privilege_escalation: 'Priv Esc',
+            defense_evasion: 'Defense Evasion',
+            credential_access: 'Cred Access',
+            discovery: 'Discovery',
+            lateral_movement: 'Lateral Mvmt',
+            collection: 'Collection',
+            exfiltration: 'Exfiltration',
+            impact: 'Impact'
+        };
+
+        const graphData = { nodes: [], links: [] };
+
+        document.querySelectorAll('.technique-card').forEach((card, index) => {
+            const phase = card.dataset.phase;
+            const name = card.querySelector('.technique-name')?.textContent || '';
+            const mitreId = card.querySelector('.technique-id')?.textContent || '';
+            const desc = card.querySelector('.technique-desc')?.textContent || '';
+            const tools = Array.from(card.querySelectorAll('.tool-tag')).map(t => t.textContent);
+            const risk = card.dataset.risk;
+
+            graphData.nodes.push({
+                id: mitreId || `tech-${index}`,
+                name: name,
+                phase: phase,
+                description: desc.substring(0, 120) + (desc.length > 120 ? '...' : ''),
+                tools: tools,
+                risk: risk,
+                index: index
+            });
+        });
+
+        const nodesByPhase = {};
+        graphData.nodes.forEach(node => {
+            if (!nodesByPhase[node.phase]) nodesByPhase[node.phase] = [];
+            nodesByPhase[node.phase].push(node);
+        });
+
+        for (let i = 0; i < phaseOrder.length - 1; i++) {
+            const currentPhase = phaseOrder[i];
+            const nextPhase = phaseOrder[i + 1];
+            if (nodesByPhase[currentPhase] && nodesByPhase[nextPhase]) {
+                const sourceNodes = nodesByPhase[currentPhase];
+                const targetNodes = nodesByPhase[nextPhase];
+                sourceNodes.forEach(source => {
+                    targetNodes.forEach(target => {
+                        if (Math.random() < 0.25 || (sourceNodes.length <= 2 && targetNodes.length <= 2)) {
+                            graphData.links.push({ source: source.id, target: target.id, value: 1 });
+                        }
+                    });
+                });
+            }
+        }
+
+        let currentView = 'flow';
+        let svg, g, zoom, simulation;
+        const container = document.getElementById('attackGraph');
+        const tooltip = document.getElementById('graphTooltip');
+
+        function initGraph() {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            d3.select('#attackGraph svg').remove();
+            svg = d3.select('#attackGraph').append('svg').attr('width', width).attr('height', height);
+            zoom = d3.zoom().scaleExtent([0.1, 4]).on('zoom', (event) => g.attr('transform', event.transform));
+            svg.call(zoom);
+            g = svg.append('g');
+            svg.append('defs').append('marker')
+                .attr('id', 'arrowhead').attr('viewBox', '-0 -5 10 10')
+                .attr('refX', 20).attr('refY', 0).attr('orient', 'auto')
+                .attr('markerWidth', 6).attr('markerHeight', 6)
+                .append('path').attr('d', 'M 0,-5 L 10,0 L 0,5').attr('fill', 'rgba(100, 116, 139, 0.4)');
+            renderGraph();
+            renderLegend();
+        }
+
+        function renderGraph() {
+            g.selectAll('*').remove();
+            if (currentView === 'flow') renderFlowGraph();
+            else if (currentView === 'force') renderForceGraph();
+            else if (currentView === 'radial') renderRadialGraph();
+        }
+
+        function renderFlowGraph() {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const padding = 60;
+            const activePhases = phaseOrder.filter(p => nodesByPhase[p] && nodesByPhase[p].length > 0);
+            if (activePhases.length === 0) return;
+
+            const laneWidth = (width - padding * 2) / activePhases.length;
+            const laneHeight = height - padding * 2;
+
+            activePhases.forEach((phase, i) => {
+                const laneG = g.append('g').attr('class', 'phase-lane-group');
+                laneG.append('rect')
+                    .attr('x', padding + i * laneWidth).attr('y', padding)
+                    .attr('width', laneWidth - 5).attr('height', laneHeight)
+                    .attr('rx', 8).style('fill', phaseColors[phase]).style('opacity', 0.08);
+                laneG.append('text')
+                    .attr('class', 'phase-lane-label')
+                    .attr('x', padding + i * laneWidth + laneWidth / 2)
+                    .attr('y', padding - 12).attr('text-anchor', 'middle')
+                    .text(phaseDisplayNames[phase] || phase);
+            });
+
+            activePhases.forEach((phase, phaseIndex) => {
+                const nodes = nodesByPhase[phase] || [];
+                const x = padding + phaseIndex * laneWidth + laneWidth / 2;
+                nodes.forEach((node, nodeIndex) => {
+                    const y = padding + 40 + (nodeIndex * (laneHeight - 60) / Math.max(nodes.length - 1, 1));
+                    node.x = x;
+                    node.y = nodes.length === 1 ? height / 2 : y;
+                });
+            });
+
+            g.append('g').selectAll('path')
+                .data(graphData.links.filter(l => {
+                    const source = graphData.nodes.find(n => n.id === l.source || n.id === l.source.id);
+                    const target = graphData.nodes.find(n => n.id === l.target || n.id === l.target.id);
+                    return source && target;
+                }))
+                .enter().append('path').attr('class', 'graph-link')
+                .attr('d', d => {
+                    const source = graphData.nodes.find(n => n.id === d.source || n.id === d.source.id);
+                    const target = graphData.nodes.find(n => n.id === d.target || n.id === d.target.id);
+                    if (!source || !target) return '';
+                    return `M${source.x},${source.y}Q${(source.x + target.x) / 2},${(source.y + target.y) / 2 - 15},${target.x},${target.y}`;
+                })
+                .attr('marker-end', 'url(#arrowhead)');
+
+            const node = g.append('g').selectAll('.graph-node')
+                .data(graphData.nodes).enter().append('g')
+                .attr('class', 'graph-node')
+                .attr('transform', d => `translate(${d.x},${d.y})`)
+                .on('mouseover', showTooltip).on('mouseout', hideTooltip)
+                .on('click', (event, d) => scrollToTechnique(d.index));
+
+            node.append('circle')
+                .attr('r', d => d.risk === 'critical' ? 12 : d.risk === 'high' ? 10 : 8)
+                .attr('fill', d => phaseColors[d.phase] || '#666')
+                .attr('stroke', d => d.risk === 'critical' ? '#f87171' : d.risk === 'high' ? '#fbbf24' : '#475569')
+                .attr('stroke-width', 2);
+
+            node.append('text').attr('dy', 22).attr('text-anchor', 'middle')
+                .text(d => d.id.length > 10 ? d.id.substring(0, 10) + '..' : d.id)
+                .style('font-size', '9px');
+        }
+
+        function renderForceGraph() {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            simulation = d3.forceSimulation(graphData.nodes)
+                .force('link', d3.forceLink(graphData.links).id(d => d.id).distance(80))
+                .force('charge', d3.forceManyBody().strength(-150))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('collision', d3.forceCollide().radius(25));
+
+            const link = g.append('g').selectAll('line')
+                .data(graphData.links).enter().append('line')
+                .attr('class', 'graph-link').attr('marker-end', 'url(#arrowhead)');
+
+            const node = g.append('g').selectAll('.graph-node')
+                .data(graphData.nodes).enter().append('g')
+                .attr('class', 'graph-node')
+                .on('mouseover', showTooltip).on('mouseout', hideTooltip)
+                .on('click', (event, d) => scrollToTechnique(d.index))
+                .call(d3.drag().on('start', dragstarted).on('drag', dragged).on('end', dragended));
+
+            node.append('circle')
+                .attr('r', d => d.risk === 'critical' ? 12 : d.risk === 'high' ? 10 : 8)
+                .attr('fill', d => phaseColors[d.phase] || '#666')
+                .attr('stroke', d => d.risk === 'critical' ? '#f87171' : '#475569')
+                .attr('stroke-width', 2);
+
+            node.append('text').attr('dy', 22).attr('text-anchor', 'middle')
+                .text(d => d.id.length > 10 ? d.id.substring(0, 10) + '..' : d.id)
+                .style('font-size', '9px');
+
+            simulation.on('tick', () => {
+                link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+
+            function dragstarted(event, d) {
+                if (!event.active) simulation.alphaTarget(0.3).restart();
+                d.fx = d.x; d.fy = d.y;
+            }
+            function dragged(event, d) { d.fx = event.x; d.fy = event.y; }
+            function dragended(event, d) {
+                if (!event.active) simulation.alphaTarget(0);
+                d.fx = null; d.fy = null;
+            }
+        }
+
+        function renderRadialGraph() {
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) / 2 - 80;
+            const activePhases = phaseOrder.filter(p => nodesByPhase[p] && nodesByPhase[p].length > 0);
+            const angleStep = (2 * Math.PI) / activePhases.length;
+
+            activePhases.forEach((phase, phaseIndex) => {
+                const nodes = nodesByPhase[phase] || [];
+                const baseAngle = phaseIndex * angleStep - Math.PI / 2;
+                const phaseRadius = radius * 0.7;
+                nodes.forEach((node, nodeIndex) => {
+                    const angleOffset = (nodeIndex - (nodes.length - 1) / 2) * 0.12;
+                    const angle = baseAngle + angleOffset;
+                    const r = phaseRadius + (nodeIndex % 2) * 35;
+                    node.x = centerX + r * Math.cos(angle);
+                    node.y = centerY + r * Math.sin(angle);
+                });
+            });
+
+            activePhases.forEach((phase, i) => {
+                const startAngle = i * angleStep - Math.PI / 2 - angleStep / 2;
+                const endAngle = startAngle + angleStep;
+                const arc = d3.arc().innerRadius(radius * 0.35).outerRadius(radius * 0.95)
+                    .startAngle(startAngle).endAngle(endAngle);
+                g.append('path').attr('d', arc)
+                    .attr('transform', `translate(${centerX},${centerY})`)
+                    .style('fill', phaseColors[phase]).style('opacity', 0.08);
+                const labelAngle = (startAngle + endAngle) / 2;
+                const labelRadius = radius * 1.08;
+                g.append('text')
+                    .attr('x', centerX + labelRadius * Math.cos(labelAngle))
+                    .attr('y', centerY + labelRadius * Math.sin(labelAngle))
+                    .attr('text-anchor', 'middle').attr('dominant-baseline', 'middle')
+                    .style('fill', '#64748b').style('font-size', '10px')
+                    .text(phaseDisplayNames[phase] || phase);
+            });
+
+            g.append('g').selectAll('path')
+                .data(graphData.links).enter().append('path')
+                .attr('class', 'graph-link')
+                .attr('d', d => {
+                    const source = graphData.nodes.find(n => n.id === d.source || n.id === d.source.id);
+                    const target = graphData.nodes.find(n => n.id === d.target || n.id === d.target.id);
+                    if (!source || !target) return '';
+                    return `M${source.x},${source.y}Q${centerX},${centerY},${target.x},${target.y}`;
+                })
+                .attr('marker-end', 'url(#arrowhead)');
+
+            const node = g.append('g').selectAll('.graph-node')
+                .data(graphData.nodes).enter().append('g')
+                .attr('class', 'graph-node')
+                .attr('transform', d => `translate(${d.x},${d.y})`)
+                .on('mouseover', showTooltip).on('mouseout', hideTooltip)
+                .on('click', (event, d) => scrollToTechnique(d.index));
+
+            node.append('circle')
+                .attr('r', d => d.risk === 'critical' ? 10 : d.risk === 'high' ? 8 : 6)
+                .attr('fill', d => phaseColors[d.phase] || '#666')
+                .attr('stroke', d => d.risk === 'critical' ? '#f87171' : '#475569')
+                .attr('stroke-width', 2);
+
+            node.append('text').attr('dy', 18).attr('text-anchor', 'middle')
+                .text(d => d.id.length > 8 ? d.id.substring(0, 8) + '..' : d.id)
+                .style('font-size', '8px');
+        }
+
+        function showTooltip(event, d) {
+            tooltip.innerHTML = `
+                <h4>${d.name}</h4>
+                <div class="mitre-id">${d.id}</div>
+                <p>${d.description}</p>
+                ${d.tools.length > 0 ? `<div class="tools">${d.tools.slice(0, 4).map(t => `<span class="tool-tag">${t}</span>`).join('')}</div>` : ''}
+            `;
+            tooltip.classList.add('visible');
+            const rect = container.getBoundingClientRect();
+            const x = event.clientX - rect.left + 15;
+            const y = event.clientY - rect.top - 10;
+            tooltip.style.left = Math.min(x, rect.width - 320) + 'px';
+            tooltip.style.top = Math.min(y, rect.height - 150) + 'px';
+        }
+
+        function hideTooltip() { tooltip.classList.remove('visible'); }
+
+        function scrollToTechnique(index) {
+            const cards = document.querySelectorAll('.technique-card');
+            if (cards[index]) {
+                cards[index].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                cards[index].classList.add('expanded');
+                cards[index].style.boxShadow = '0 0 0 2px var(--accent-primary)';
+                setTimeout(() => { cards[index].style.boxShadow = ''; }, 2000);
+            }
+        }
+
+        function renderLegend() {
+            const legend = document.getElementById('graphLegend');
+            const activePhases = phaseOrder.filter(p => nodesByPhase[p] && nodesByPhase[p].length > 0);
+            legend.innerHTML = activePhases.map(phase => `
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: ${phaseColors[phase]}"></div>
+                    <span>${phaseDisplayNames[phase]} (${nodesByPhase[phase].length})</span>
+                </div>
+            `).join('');
+        }
+
+        function setGraphView(view) {
+            currentView = view;
+            document.querySelectorAll('.view-toggle button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(view + 'ViewBtn').classList.add('active');
+            if (simulation) simulation.stop();
+            renderGraph();
+        }
+
+        function resetGraphZoom() {
+            svg.transition().duration(500).call(zoom.transform, d3.zoomIdentity);
+        }
+
+        function exportGraphSVG() {
+            const svgData = new XMLSerializer().serializeToString(svg.node());
+            const blob = new Blob([svgData], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'attack-graph.svg';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize graph
+        document.addEventListener('DOMContentLoaded', function() {
+            if (graphData.nodes.length > 0) {
+                initGraph();
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(initGraph, 250);
+                });
+            } else {
+                document.querySelector('.section-card:has(#attackGraph)')?.style.setProperty('display', 'none');
+            }
+        });
+    </script>
+</body>
+</html>

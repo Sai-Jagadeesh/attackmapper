@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-tertiary: #0f3460;
+            --accent: #00d4ff;
+            --accent-secondary: #ff6b6b;
+            --text-primary: #eee;
+            --text-secondary: #aaa;
+            --text-dim: #666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px;
+            border-bottom: 2px solid var(--accent);
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .meta {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .meta span {
+            margin: 0 10px;
+        }
+
+        h2 {
+            color: var(--accent-secondary);
+            font-size: 1.5rem;
+            margin: 30px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--bg-tertiary);
+        }
+
+        .phase {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .phase-header {
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .phase-reconnaissance { background: linear-gradient(90deg, #0891b2, #0891b2aa); }
+        .phase-initial_access { background: linear-gradient(90deg, #059669, #059669aa); }
+        .phase-execution { background: linear-gradient(90deg, #d97706, #d97706aa); }
+        .phase-persistence { background: linear-gradient(90deg, #7c3aed, #7c3aedaa); }
+        .phase-privilege_escalation { background: linear-gradient(90deg, #dc2626, #dc2626aa); }
+        .phase-defense_evasion { background: linear-gradient(90deg, #2563eb, #2563ebaa); }
+        .phase-credential_access { background: linear-gradient(90deg, #be123c, #be123caa); }
+        .phase-discovery { background: linear-gradient(90deg, #0e7490, #0e7490aa); }
+        .phase-lateral_movement { background: linear-gradient(90deg, #ca8a04, #ca8a04aa); }
+        .phase-collection { background: linear-gradient(90deg, #9333ea, #9333eaaa); }
+        .phase-exfiltration { background: linear-gradient(90deg, #1d4ed8, #1d4ed8aa); }
+        .phase-impact { background: linear-gradient(90deg, #991b1b, #991b1baa); }
+
+        .techniques-list {
+            padding: 20px;
+        }
+
+        .technique {
+            background: var(--bg-tertiary);
+            border-left: 3px solid var(--accent);
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-radius: 0 8px 8px 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .technique:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .technique:last-child {
+            margin-bottom: 0;
+        }
+
+        .technique-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .technique-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .technique-id {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            background: var(--bg-primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .technique-description {
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+        }
+
+        .technique-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .detail-value {
+            color: var(--text-secondary);
+        }
+
+        .risk-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .risk-low { background: #22c55e33; color: #22c55e; }
+        .risk-medium { background: #eab30833; color: #eab308; }
+        .risk-high { background: #ef444433; color: #ef4444; }
+        .risk-critical { background: #dc262633; color: #dc2626; }
+
+        .tools-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .tool-tag {
+            background: var(--bg-primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .summary {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .summary-stats {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+            border-top: 1px solid var(--bg-tertiary);
+            color: var(--text-dim);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .technique-header {
+                flex-direction: column;
+            }
+
+            .technique-id {
+                margin-top: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>{{ title }}</h1>
+            <div class="meta">
+                <span>Generated: {{ generated_at }}</span>
+                <span>|</span>
+                <span>Infrastructure: {{ infrastructure | upper }}</span>
+                <span>|</span>
+                <span>Total Techniques: {{ total_techniques }}</span>
+            </div>
+        </header>
+
+        <div class="summary">
+            <div class="summary-stats">
+                {% for phase in phase_order %}
+                {% if phase in techniques_by_phase %}
+                <div class="stat">
+                    <div class="stat-value">{{ techniques_by_phase[phase] | length }}</div>
+                    <div class="stat-label">{{ phase_display_names[phase] }}</div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <h2>Attack Techniques by Phase</h2>
+
+        {% for phase in phase_order %}
+        {% if phase in techniques_by_phase %}
+        <div class="phase">
+            <div class="phase-header phase-{{ phase }}">
+                {{ phase_display_names[phase] }}
+            </div>
+            <div class="techniques-list">
+                {% for tech in techniques_by_phase[phase] %}
+                <div class="technique">
+                    <div class="technique-header">
+                        <span class="technique-name">{{ tech.name }}</span>
+                        <span class="technique-id">{{ tech.mitre_id }}</span>
+                    </div>
+                    <p class="technique-description">{{ tech.description }}</p>
+                    <div class="technique-details">
+                        <div class="detail">
+                            <span class="detail-label">Risk Level</span>
+                            <span class="detail-value">
+                                <span class="risk-badge risk-{{ tech.risk_level }}">{{ tech.risk_level }}</span>
+                            </span>
+                        </div>
+                        {% if tech.tools %}
+                        <div class="detail">
+                            <span class="detail-label">Tools</span>
+                            <div class="tools-list">
+                                {% for tool in tech.tools %}
+                                <span class="tool-tag">{{ tool }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        {% if tech.detection %}
+                        <div class="detail">
+                            <span class="detail-label">Detection</span>
+                            <span class="detail-value">{{ tech.detection }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+
+        <footer>
+            <p>Generated by <a href="https://github.com/attackmapper/attackmapper">AttackMapper</a></p>
+            <p>For authorized security testing and educational purposes only.</p>
+        </footer>
+    </div>
+</body>
+</html>
