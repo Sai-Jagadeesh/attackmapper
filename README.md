@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="docs/images/logo.png" alt="AttackMapper Logo" width="120">
-</p>
-
 <h1 align="center">AttackMapper</h1>
 
 <p align="center">
@@ -12,7 +8,6 @@
   <a href="#features">Features</a> •
   <a href="#installation">Installation</a> •
   <a href="#quick-start">Quick Start</a> •
-  <a href="#screenshots">Screenshots</a> •
   <a href="#documentation">Documentation</a>
 </p>
 
@@ -27,10 +22,6 @@
 ## Overview
 
 AttackMapper is a powerful CLI tool for red team operations that generates comprehensive attack paths, maps techniques to the MITRE ATT&CK framework, and integrates real-time threat intelligence. Generate beautiful, interactive HTML reports with attack flow visualizations.
-
-<p align="center">
-  <img src="docs/images/dashboard.png" alt="Dashboard Overview" width="800">
-</p>
 
 ## Features
 
@@ -59,33 +50,6 @@ AttackMapper is a powerful CLI tool for red team operations that generates compr
 - **Threat Intelligence Dashboard** - CVEs, threat actors, trending TTPs
 - **Attack Flow Graphs** - Multiple visualization modes
 - **Export Options** - HTML, JSON formats
-
-## Screenshots
-
-### Interactive Report Dashboard
-<p align="center">
-  <img src="docs/images/report-dashboard.png" alt="Report Dashboard" width="800">
-</p>
-
-### Attack Flow Visualization
-<p align="center">
-  <img src="docs/images/attack-graph.png" alt="Attack Graph" width="800">
-</p>
-
-### Threat Intelligence Panel
-<p align="center">
-  <img src="docs/images/threat-intel.png" alt="Threat Intelligence" width="800">
-</p>
-
-### Technique Details
-<p align="center">
-  <img src="docs/images/technique-details.png" alt="Technique Details" width="800">
-</p>
-
-### CLI Output
-<p align="center">
-  <img src="docs/images/cli-output.png" alt="CLI Output" width="800">
-</p>
 
 ## Installation
 
