@@ -19,6 +19,10 @@
 
 ---
 
+<p align="center">
+  <img src="assets/attackmapper_dashboard.png" alt="AttackMapper Dashboard" width="900">
+</p>
+
 ## Overview
 
 AttackMapper is a powerful CLI tool for red team operations that generates attack paths, maps techniques to the MITRE ATT&CK framework, and integrates real-time threat intelligence. Generate beautiful, interactive HTML reports with attack flow visualizations.
