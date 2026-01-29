@@ -165,6 +165,4 @@ MIT License
 
 ---
 
-<p align="center">
-  <sub>Built for Red Team Operations</sub>
-</p>
+> Built for Red Team Operations
