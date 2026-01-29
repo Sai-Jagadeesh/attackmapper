@@ -150,9 +150,18 @@ git push origin feature/your-feature
 # Open a Pull Request
 ```
 
+---
+
 ## License
 
-MIT License - see [LICENSE](LICENSE) for details.
+MIT License
+
+---
+
+## Disclaimer
+
+> **Warning**
+> This tool is intended for authorized security testing and red team engagements only. Always obtain proper authorization before scanning any systems you do not own. The authors are not responsible for misuse of this tool.
 
 ---
 
