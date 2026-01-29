@@ -1,132 +1,133 @@
-<h1 align="center">AttackMapper</h1>
+<h1 align="center">
+  <br>
+  <img src="https://img.shields.io/badge/AttackMapper-v0.1.0-red?style=for-the-badge" alt="AttackMapper">
+  <br>
+  AttackMapper
+  <br>
+</h1>
+
+<h4 align="center">Attack Path Visualization & Threat Intelligence Platform</h4>
 
 <p align="center">
-  <strong>Attack Path Visualization & Threat Intelligence Platform</strong>
+  <img src="https://img.shields.io/badge/python-3.9+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.9+">
+  <img src="https://img.shields.io/badge/MITRE%20ATT%26CK-Integrated-red?style=flat-square" alt="MITRE ATT&CK">
+  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="License: MIT">
+  <img src="https://img.shields.io/badge/threat--intel-live-orange?style=flat-square" alt="Threat Intel">
 </p>
 
 <p align="center">
   <a href="#features">Features</a> •
   <a href="#installation">Installation</a> •
-  <a href="#quick-start">Quick Start</a> •
-  <a href="#documentation">Documentation</a>
+  <a href="#usage">Usage</a> •
+  <a href="#threat-intelligence">Threat Intel</a> •
+  <a href="#contributing">Contributing</a>
 </p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="Python 3.9+">
-  <img src="https://img.shields.io/badge/license-MIT-green.svg" alt="License: MIT">
-  <img src="https://img.shields.io/badge/MITRE%20ATT%26CK-integrated-red.svg" alt="MITRE ATT&CK">
-</p>
-
----
 
 <p align="center">
   <img src="assets/attackmapper_dashboard.png" alt="AttackMapper Dashboard" width="900">
 </p>
 
+---
+
 ## Overview
 
-AttackMapper is a powerful CLI tool for red team operations that generates attack paths, maps techniques to the MITRE ATT&CK framework, and integrates real-time threat intelligence. Generate beautiful, interactive HTML reports with attack flow visualizations.
+**AttackMapper** is a CLI tool for red team operations that generates attack paths, maps techniques to the MITRE ATT&CK framework, and integrates real-time threat intelligence. Generate interactive HTML reports with attack flow visualizations.
 
 ## Features
 
-### Attack Path Visualization
-- **Kill Chain Mapping** - Visualize complete attack paths from reconnaissance to impact
-- **Interactive Graph Views** - Force-directed, radial, and flow-based visualizations
-- **Phase-based Organization** - Techniques organized by MITRE ATT&CK tactics
+| Feature | Description |
+|---------|-------------|
+| **Attack Path Mapping** | Visualize complete kill chains from reconnaissance to impact |
+| **MITRE ATT&CK Integration** | Techniques mapped to official ATT&CK framework |
+| **Live Threat Intel** | Real-time CVEs, threat actors, and trending TTPs |
+| **Multi-Infrastructure** | AD, AWS, Azure, GCP, and Network attack paths |
+| **Interactive Reports** | Modern HTML dashboards with filtering and search |
 
-### Threat Intelligence Integration
-- **CISA KEV** - Known Exploited Vulnerabilities catalog
-- **AlienVault OTX** - Open Threat Exchange feeds
-- **CVE Tracking** - Real-time vulnerability intelligence
-- **Threat Actor Profiles** - Active adversary group tracking
+### Supported Infrastructure
 
-### Multi-Infrastructure Support
-| Infrastructure | Description |
-|---------------|-------------|
-| **Active Directory** | Domain attacks, Kerberos, ADCS, Group Policy |
-| **AWS** | IAM, S3, Lambda, EC2, privilege escalation |
-| **Azure** | Entra ID, Key Vault, managed identities |
-| **GCP** | IAM, Cloud Functions, service accounts |
-| **Network** | Traditional network attack paths |
-
-### Enterprise Reporting
-- **Interactive HTML Reports** - Modern, responsive dashboard UI
-- **Threat Intelligence Dashboard** - CVEs, threat actors, trending TTPs
-- **Attack Flow Graphs** - Multiple visualization modes
-- **Export Options** - HTML, JSON formats
+```
+┌─────────────────┬─────────────────────────────────────────┐
+│ Active Directory│ Kerberos, ADCS, GPO, DCSync, Golden Ticket│
+│ AWS             │ IAM, S3, Lambda, EC2 privilege escalation │
+│ Azure           │ Entra ID, Key Vault, Managed Identities   │
+│ GCP             │ IAM, Cloud Functions, Service Accounts    │
+│ Network         │ Traditional network attack vectors        │
+└─────────────────┴─────────────────────────────────────────┘
+```
 
 ## Installation
 
-### Requirements
-- Python 3.9+
-- pip
-
-### Install from source
-
 ```bash
+# Clone the repository
 git clone https://github.com/Sai-Jagadeesh/attackmapper.git
 cd attackmapper
+
+# Install
 pip install -e .
-```
 
-### Verify installation
-
-```bash
+# Verify
 attackmapper --help
 ```
 
-## Quick Start
+## Usage
 
-### View Attack Paths
+### Generate Attack Paths
 
 ```bash
-# Active Directory attack paths
+# Active Directory
 attackmapper ad
 
-# AWS cloud attack paths
+# Cloud Infrastructure
 attackmapper aws
-
-# Azure cloud attack paths
 attackmapper azure
-
-# GCP cloud attack paths
 attackmapper gcp
 
-# Network attack paths
+# Network
 attackmapper network
 ```
 
-### Filter by Attack Phase
+### Generate HTML Reports
 
 ```bash
-# View only credential access techniques
-attackmapper ad --category credential_access
-
-# View privilege escalation techniques
-attackmapper aws --category privilege_escalation
-```
-
-### Generate Reports
-
-```bash
-# Generate interactive HTML report
+# Full attack chain report
 attackmapper full-chain --infra ad --output report.html --format html
 
-# Generate JSON export
-attackmapper full-chain --infra ad --output report.json --format json
+# Filter by attack phase
+attackmapper ad --category credential_access
 ```
 
 ### Threat Intelligence
 
 ```bash
-# Update threat intelligence feeds
+# Update threat feeds
 attackmapper update-intel
 
-# View threat intel for specific infrastructure
+# View threat intel
 attackmapper threat-intel --infra ad
 ```
 
-## Commands Reference
+## Threat Intelligence
+
+AttackMapper integrates live threat intelligence from multiple sources:
+
+| Source | Data |
+|--------|------|
+| **CISA KEV** | Known Exploited Vulnerabilities |
+| **AlienVault OTX** | Open Threat Exchange feeds |
+| **CVE Database** | Real-time vulnerability tracking |
+
+### Configuration
+
+```bash
+cp .env.example .env
+```
+
+```env
+# AlienVault OTX API Key (free at otx.alienvault.com)
+OTX_API_KEY=your_api_key_here
+```
+
+## Commands
 
 | Command | Description |
 |---------|-------------|
@@ -137,99 +138,24 @@ attackmapper threat-intel --infra ad
 | `attackmapper network` | Network attack paths |
 | `attackmapper full-chain` | Generate complete attack chain |
 | `attackmapper threat-intel` | View threat intelligence |
-| `attackmapper update-intel` | Update threat intel database |
-
-### Options
-
-```
---category, -c    Filter by attack phase
---output, -o      Output file path
---format, -f      Output format (html, json)
---help            Show help message
-```
-
-## Configuration
-
-### Environment Variables
-
-Copy the example environment file:
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` with your API keys:
-
-```env
-# AlienVault OTX API Key (free)
-OTX_API_KEY=your_api_key_here
-```
-
-### Getting API Keys
-
-#### AlienVault OTX (Free)
-1. Sign up at [AlienVault OTX](https://otx.alienvault.com/)
-2. Go to Settings → API Integration
-3. Copy your API key
-
-## Project Structure
-
-```
-attackmapper/
-├── attackmapper/
-│   ├── core/           # Core engine and models
-│   ├── modules/        # Infrastructure modules
-│   │   ├── ad/         # Active Directory
-│   │   ├── aws/        # AWS Cloud
-│   │   ├── azure/      # Azure Cloud
-│   │   ├── gcp/        # GCP Cloud
-│   │   └── network/    # Network
-│   ├── intel/          # Threat intelligence
-│   ├── templates/      # Report templates
-│   └── data/           # Technique databases
-├── tests/              # Test suite
-└── docs/               # Documentation
-```
-
-## MITRE ATT&CK Coverage
-
-AttackMapper maps techniques across the full kill chain:
-
-- **Reconnaissance** - Target identification and information gathering
-- **Initial Access** - Entry point techniques
-- **Execution** - Running malicious code
-- **Persistence** - Maintaining access
-- **Privilege Escalation** - Gaining higher permissions
-- **Defense Evasion** - Avoiding detection
-- **Credential Access** - Stealing credentials
-- **Discovery** - Environment exploration
-- **Lateral Movement** - Moving through the network
-- **Collection** - Gathering target data
-- **Exfiltration** - Stealing data
-- **Impact** - Disruption and destruction
+| `attackmapper update-intel` | Update threat intel feeds |
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+```bash
+# Fork and clone
+git checkout -b feature/your-feature
+git commit -m 'Add feature'
+git push origin feature/your-feature
+# Open a Pull Request
+```
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- [MITRE ATT&CK](https://attack.mitre.org/) - Framework and technique mappings
-- [AlienVault OTX](https://otx.alienvault.com/) - Threat intelligence feeds
-- [CISA KEV](https://www.cisa.gov/known-exploited-vulnerabilities-catalog) - Vulnerability catalog
+MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
 <p align="center">
-  <strong>Built for Red Team Operations</strong>
+  <sub>Built for Red Team Operations</sub>
 </p>
